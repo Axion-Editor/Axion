@@ -1,0 +1,10 @@
+{
+  "appId": "com.axion",
+  "appName": "Axion",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}
