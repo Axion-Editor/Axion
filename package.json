@@ -8,9 +8,8 @@
     "mobile"
   ],
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "run": "vite build && npx cap sync && npx cap run android",
+    "build": "vite build && npx cap sync && npx cap build android"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.2",
