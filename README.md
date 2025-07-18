@@ -6,6 +6,9 @@
 ### Run
 
 ```bash
+# first time
+npm install
+
 # starts web preview
 npm run dev
 
@@ -27,6 +30,9 @@ Or with script:
 ### Build
 
 ```bash
+# first time
+npm install
+
 # web build only (UI preview)
 npm run build
 
