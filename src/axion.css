@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
+All colors MUST be HSL.
+*/
+
+@layer base {
+    :root {
+        /* Code Editor Dark Theme */
+        --background: 220 13% 8%;
+        --foreground: 220 9% 85%;
+
+        --card: 220 13% 10%;
+        --card-foreground: 220 9% 85%;
+
+        --popover: 220 13% 12%;
+        --popover-foreground: 220 9% 85%;
+
+        --primary: 217 91% 60%;
+        --primary-foreground: 220 13% 8%;
+
+        --secondary: 220 13% 14%;
+        --secondary-foreground: 220 9% 85%;
+
+        --muted: 220 13% 12%;
+        --muted-foreground: 220 9% 55%;
+
+        --accent: 142 71% 45%;
+        --accent-foreground: 220 13% 8%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 220 13% 18%;
+        --input: 220 13% 14%;
+        --ring: 217 91% 60%;
+
+        --radius: 0.375rem;
+
+        /* Editor specific colors */
+        --editor-background: 220 13% 9%;
+        --editor-gutter: 220 13% 12%;
+        --editor-line-highlight: 220 13% 11%;
+        --editor-selection: 217 91% 60% / 0.3;
+        --editor-cursor: 217 91% 60%;
+
+        /* Syntax highlighting */
+        --syntax-keyword: 290 98% 76%;
+        --syntax-string: 142 71% 45%;
+        --syntax-number: 35 98% 76%;
+        --syntax-comment: 220 9% 45%;
+        --syntax-function: 204 98% 76%;
+        --syntax-variable: 220 9% 85%;
+
+        /* Status colors */
+        --status-info: 204 98% 76%;
+        --status-success: 142 71% 45%;
+        --status-warning: 35 98% 76%;
+        --status-error: 0 84% 60%;
+
+        /* Sidebar */
+        --sidebar-background: 220 13% 10%;
+        --sidebar-foreground: 220 9% 75%;
+        --sidebar-primary: 217 91% 60%;
+        --sidebar-primary-foreground: 220 13% 8%;
+        --sidebar-accent: 220 13% 14%;
+        --sidebar-accent-foreground: 220 9% 85%;
+        --sidebar-border: 220 13% 18%;
+        --sidebar-ring: 217 91% 60%;
+
+        /* Gradients */
+        --gradient-primary: linear-gradient(
+            135deg,
+            hsl(217 91% 60%),
+            hsl(204 98% 76%)
+        );
+        --gradient-accent: linear-gradient(
+            135deg,
+            hsl(142 71% 45%),
+            hsl(35 98% 76%)
+        );
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px 0 hsl(220 13% 8% / 0.05);
+        --shadow-md: 0 4px 6px -1px hsl(220 13% 8% / 0.1);
+        --shadow-lg: 0 10px 15px -3px hsl(220 13% 8% / 0.1);
+
+        /* Transitions */
+        --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dark {
+        /* Already optimized for dark mode - same values */
+        --background: 220 13% 8%;
+        --foreground: 220 9% 85%;
+        --card: 220 13% 10%;
+        --card-foreground: 220 9% 85%;
+        --popover: 220 13% 12%;
+        --popover-foreground: 220 9% 85%;
+        --primary: 217 91% 60%;
+        --primary-foreground: 220 13% 8%;
+        --secondary: 220 13% 14%;
+        --secondary-foreground: 220 9% 85%;
+        --muted: 220 13% 12%;
+        --muted-foreground: 220 9% 55%;
+        --accent: 142 71% 45%;
+        --accent-foreground: 220 13% 8%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 220 13% 18%;
+        --input: 220 13% 14%;
+        --ring: 217 91% 60%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-[border];
+    }
+
+    body {
+        @apply bg-[background] text-[foreground];
+    }
+}
