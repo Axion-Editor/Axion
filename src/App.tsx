@@ -7,7 +7,7 @@ import NotFound from "./pages/NotFound";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, MemoryRouter, Route, Routes } from "react-router-dom";
 
-const isNative = () => Capacitor.getPlatform() !== "web";
+const isNative = () => Capacitor.isNativePlatform();
 
 const queryClient = new QueryClient();
 
