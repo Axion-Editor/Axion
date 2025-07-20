@@ -5,7 +5,6 @@ import {
   SiPython,
   SiCplusplus,
   SiHtml5,
-  SiJson,
   SiMarkdown,
   SiCss3,
   SiReact,
@@ -13,6 +12,7 @@ import {
   SiC,
 } from "react-icons/si";
 import { FaJava } from "react-icons/fa";
+import { VscJson } from "react-icons/vsc";
 
 interface LanguageIconProps {
   language: string;
@@ -37,7 +37,7 @@ const LanguageIcon = ({ language, className }: LanguageIconProps) => {
     case "html":
       return <SiHtml5 className={className} />;
     case "json":
-      return <SiJson className={className} />;
+      return <VscJson className={className} />;
     case "markdown":
       return <SiMarkdown className={className} />;
     case "css":

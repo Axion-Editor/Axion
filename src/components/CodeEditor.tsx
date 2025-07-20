@@ -1,15 +1,5 @@
 import { useState } from "react";
-import { X, Plus, Circle, Text } from "lucide-react";
-import {
-  SiTypescript,
-  SiJavascript,
-  SiPython,
-  SiHtml5,
-  SiJson,
-  SiMarkdown,
-  SiCss3,
-  SiReact,
-} from "react-icons/si";
+import { X, Plus, Circle } from "lucide-react";
 
 import AceEditor from "react-ace";
 
@@ -34,6 +24,7 @@ import "ace-builds/src-noconflict/theme-dracula";
 // Import extensions
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-searchbox";
+
 import { cn, isNative } from "@/lib/utils";
 import LanguageIcon from "./LanguageIcon";
 import { Language } from "@/lib/language";
