@@ -1,30 +1,40 @@
 import { useState } from "react";
 import { X, Plus, Circle, Text } from "lucide-react";
-import { SiTypescript, SiJavascript, SiPython, SiHtml5, SiJson, SiMarkdown, SiCss3, SiReact } from 'react-icons/si';
+import {
+  SiTypescript,
+  SiJavascript,
+  SiPython,
+  SiHtml5,
+  SiJson,
+  SiMarkdown,
+  SiCss3,
+  SiReact,
+} from "react-icons/si";
 
-import AceEditor from 'react-ace';
+import AceEditor from "react-ace";
 
 // Import modes (languages)
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/mode-typescript';
-import 'ace-builds/src-noconflict/mode-jsx';
-import 'ace-builds/src-noconflict/mode-tsx';
-import 'ace-builds/src-noconflict/mode-css';
-import 'ace-builds/src-noconflict/mode-html';
-import 'ace-builds/src-noconflict/mode-markdown';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/mode-text';
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-typescript";
+import "ace-builds/src-noconflict/mode-jsx";
+import "ace-builds/src-noconflict/mode-tsx";
+import "ace-builds/src-noconflict/mode-css";
+import "ace-builds/src-noconflict/mode-html";
+import "ace-builds/src-noconflict/mode-markdown";
+import "ace-builds/src-noconflict/mode-python";
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/mode-text";
 
 // Import themes
-import 'ace-builds/src-noconflict/theme-monokai';
-import 'ace-builds/src-noconflict/theme-github';
-import 'ace-builds/src-noconflict/theme-tomorrow_night';
-import 'ace-builds/src-noconflict/theme-dracula';
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-tomorrow_night";
+import "ace-builds/src-noconflict/theme-dracula";
 
 // Import extensions
-import 'ace-builds/src-noconflict/ext-language_tools';
-import 'ace-builds/src-noconflict/ext-searchbox';
+import "ace-builds/src-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/ext-searchbox";
+import { cn, isNative } from "@/lib/utils";
 
 interface Tab {
   id: string;
@@ -42,7 +52,7 @@ const CodeEditor = () => {
       id: "1",
       name: "index.tsx",
       path: "index.tsx",
-      language: "typescript",
+      language: "tsx",
       content: `import React from 'react';
 
 const Index = () => {
@@ -54,7 +64,7 @@ const Index = () => {
 };
 
 export default Index;`,
-      isModified: false
+      isModified: false,
     },
     {
       id: "2",
@@ -72,7 +82,7 @@ body {
   margin: 0 auto;
   padding: 20px;
 }`,
-      isModified: true
+      isModified: true,
     },
     {
       id: "3",
@@ -89,12 +99,12 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
 - Syntax highlighting
 - File type detection
 - Modern dark theme`,
-      isModified: false
-    }
+      isModified: false,
+    },
   ]);
 
   const closeTab = (tabId: string) => {
-    const newTabs = tabs.filter(tab => tab.id !== tabId);
+    const newTabs = tabs.filter((tab) => tab.id !== tabId);
     setTabs(newTabs);
 
     if (activeTab === tabId && newTabs.length > 0) {
@@ -109,48 +119,54 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
       path: "untitled.txt",
       language: "text",
       content: "// New file\n",
-      isModified: false
+      isModified: false,
     };
     setTabs([...tabs, newTab]);
     setActiveTab(newTab.id);
   };
 
   const updateTabContent = (tabId: string, content: string) => {
-    setTabs(prevTabs => 
-      prevTabs.map(tab => 
-        tab.id === tabId 
-          ? { ...tab, content, isModified: true }
-          : tab
-      )
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === tabId ? { ...tab, content, isModified: true } : tab,
+      ),
     );
   };
 
-  const currentTab = tabs.find(tab => tab.id === activeTab);
+  const currentTab = tabs.find((tab) => tab.id === activeTab);
 
   return (
-    <div className="flex h-screen flex-col bg-gray-900 text-white">
+    <div className="flex h-full flex-col bg-editor">
       {/* Tab Bar */}
-      <div className="flex items-center bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center bg-card border-b border-border">
         <div className="flex flex-1 overflow-x-auto">
           {tabs.map((tab) => (
             <div
               key={tab.id}
-              className={`flex items-center gap-2 px-3 py-2 border-r border-gray-700 cursor-pointer group hover:bg-gray-700 transition-colors min-w-0 flex-shrink-0 ${
-                activeTab === tab.id ? "bg-gray-900 text-white" : "bg-gray-800 text-gray-400"
-              }`}
+              className={cn(
+                "flex items-center gap-2 px-2 md:px-3 py-2 border-r border-border cursor-pointer group hover:bg-muted transition-colors min-w-0 flex-shrink-0",
+                activeTab === tab.id
+                  ? "bg-editor text-foreground"
+                  : "bg-card text-muted-foreground",
+              )}
               onClick={() => setActiveTab(tab.id)}
             >
               <LanguageIcon language={tab.language} />
-              <span className="text-sm truncate max-w-[120px]">{tab.name}</span>
+              <span className="text-sm truncate max-w-[80px] sm:max-w-[120px]">
+                {tab.name}
+              </span>
               {tab.isModified && (
-                <Circle className="w-2 h-2 fill-orange-500 text-orange-500 flex-shrink-0" />
+                <Circle className="w-2 h-2 fill-accent text-accent flex-shrink-0" />
               )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   closeTab(tab.id);
                 }}
-                className="p-0.5 rounded opacity-70 md:opacity-0 group-hover:opacity-100 hover:bg-muted-foreground/20 transition-opacity flex-shrink-0"
+                className={cn(
+                  "p-0.5 rounded opacity-70 group-hover:opacity-100 hover:bg-muted-foreground/20 transition-opacity flex-shrink-0",
+                  isNative() ? "md:opacity-50" : "md:opacity-0",
+                )}
               >
                 <X className="w-3 h-3" />
               </button>
@@ -159,7 +175,7 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
         </div>
         <button
           onClick={addNewTab}
-          className="p-2 hover:bg-gray-700 transition-colors border-l border-gray-700 flex-shrink-0"
+          className="p-2 hover:bg-muted transition-colors border-l border-border flex-shrink-0"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -174,10 +190,12 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
             onChange={(content) => updateTabContent(currentTab.id, content)}
           />
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
+          <div className="h-full flex items-center justify-center text-muted-foreground p-4">
             <div className="text-center">
-              <p className="text-lg mb-2">No files open</p>
-              <p className="text-sm">Open a file from the sidebar or create a new one</p>
+              <p className="text-base sm:text-lg mb-2">No files open</p>
+              <p className="text-xs sm:text-sm">
+                Open a file from the sidebar or create a new one
+              </p>
             </div>
           </div>
         )}
@@ -190,24 +208,24 @@ const LanguageIcon = ({ language }: { language?: string }) => {
   const getIcon = () => {
     switch (language) {
       case "typescript":
-        return <SiTypescript className="w-3 h-3 text-blue-500" />;
+        return <SiTypescript className="w-3 h-3" />;
       case "python":
-        return <SiPython className="w-3 h-3 text-yellow-500" />;
+        return <SiPython className="w-3 h-3" />;
       case "html":
-        return <SiHtml5 className="w-3 h-3 text-orange-500" />;
+        return <SiHtml5 className="w-3 h-3" />;
       case "json":
-        return <SiJson className="w-3 h-3 text-yellow-600" />;
+        return <SiJson className="w-3 h-3" />;
       case "markdown":
-        return <SiMarkdown className="w-3 h-3 text-gray-400" />;
+        return <SiMarkdown className="w-3 h-3" />;
       case "javascript":
-        return <SiJavascript className="w-3 h-3 text-yellow-500" />;
+        return <SiJavascript className="w-3 h-3" />;
       case "css":
       case "scss":
-        return <SiCss3 className="w-3 h-3 text-blue-500" />;
+        return <SiCss3 className="w-3 h-3" />;
       case "tsx":
-        return <SiReact className="w-3 h-3 text-blue-400" />;
+        return <SiReact className="w-3 h-3" />;
       default:
-        return <Text className="w-3 h-3 text-gray-400" />;
+        return <Text className="w-3 h-3" />;
     }
   };
 
@@ -217,21 +235,36 @@ const LanguageIcon = ({ language }: { language?: string }) => {
 // Map file extensions to Ace Editor modes
 const getAceMode = (language?: string): string => {
   switch (language) {
-    case 'typescript': return 'typescript';
-    case 'javascript': return 'javascript';
-    case 'tsx': return 'tsx';
-    case 'jsx': return 'jsx';
-    case 'css': return 'css';
-    case 'scss': return 'css';
-    case 'html': return 'html';
-    case 'markdown': return 'markdown';
-    case 'python': return 'python';
-    case 'json': return 'json';
-    default: return 'text';
+    case "typescript":
+      return "typescript";
+    case "javascript":
+      return "javascript";
+    case "tsx":
+      return "tsx";
+    case "jsx":
+      return "jsx";
+    case "css":
+      return "css";
+    case "scss":
+      return "css";
+    case "html":
+      return "html";
+    case "markdown":
+      return "markdown";
+    case "python":
+      return "python";
+    case "json":
+      return "json";
+    default:
+      return "text";
   }
 };
 
-const AceEditorComponent = ({ value, language, onChange }: {
+const AceEditorComponent = ({
+  value,
+  language,
+  onChange,
+}: {
   value: string;
   language: string;
   onChange: (value: string) => void;
@@ -262,13 +295,13 @@ const AceEditorComponent = ({ value, language, onChange }: {
       }}
       commands={[
         {
-          name: 'save',
-          bindKey: { win: 'Ctrl-S', mac: 'Cmd-S' },
+          name: "save",
+          bindKey: { win: "Ctrl-S", mac: "Cmd-S" },
           exec: () => {
             // Handle save functionality
-            console.log('Save triggered');
-          }
-        }
+            console.log("Save triggered");
+          },
+        },
       ]}
     />
   );
