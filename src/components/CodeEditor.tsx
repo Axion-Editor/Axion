@@ -35,12 +35,14 @@ import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-searchbox";
 import { cn, isNative } from "@/lib/utils";
+import LanguageIcon from "./LanguageIcon";
+import { Language } from "@/lib/language";
 
 interface Tab {
   id: string;
   name: string;
   path: string;
-  language?: string;
+  language?: Language;
   content: string;
   isModified: boolean;
 }
@@ -52,7 +54,7 @@ const CodeEditor = () => {
       id: "1",
       name: "index.tsx",
       path: "index.tsx",
-      language: "tsx",
+      language: "TypeScript React",
       content: `import React from 'react';
 
 const Index = () => {
@@ -70,7 +72,7 @@ export default Index;`,
       id: "2",
       name: "style.css",
       path: "style.css",
-      language: "css",
+      language: "CSS",
       content: `/* Add your CSS styles here */
 body {
   background-color: #f0f0f0;
@@ -82,13 +84,13 @@ body {
   margin: 0 auto;
   padding: 20px;
 }`,
-      isModified: true,
+      isModified: false,
     },
     {
       id: "3",
       name: "README.md",
       path: "README.md",
-      language: "markdown",
+      language: "Markdown",
       content: `# Axion
 
 This is a simple code editor built with React and Ace Editor for syntax highlighting.
@@ -117,7 +119,7 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
       id: Date.now().toString(),
       name: "untitled.txt",
       path: "untitled.txt",
-      language: "text",
+      language: "Text",
       content: "// New file\n",
       isModified: false,
     };
@@ -151,7 +153,7 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
               )}
               onClick={() => setActiveTab(tab.id)}
             >
-              <LanguageIcon language={tab.language} />
+              <LanguageIcon language={tab.language} className="w-3 h-3" />
               <span className="text-sm truncate max-w-[80px] sm:max-w-[120px]">
                 {tab.name}
               </span>
@@ -186,7 +188,7 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
         {tabs.length > 0 && currentTab ? (
           <AceEditorComponent
             value={currentTab.content}
-            language={currentTab.language || "text"}
+            language={currentTab.language || "Unknown"}
             onChange={(content) => updateTabContent(currentTab.id, content)}
           />
         ) : (
@@ -204,57 +206,28 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
   );
 };
 
-const LanguageIcon = ({ language }: { language?: string }) => {
-  const getIcon = () => {
-    switch (language) {
-      case "typescript":
-        return <SiTypescript className="w-3 h-3" />;
-      case "python":
-        return <SiPython className="w-3 h-3" />;
-      case "html":
-        return <SiHtml5 className="w-3 h-3" />;
-      case "json":
-        return <SiJson className="w-3 h-3" />;
-      case "markdown":
-        return <SiMarkdown className="w-3 h-3" />;
-      case "javascript":
-        return <SiJavascript className="w-3 h-3" />;
-      case "css":
-      case "scss":
-        return <SiCss3 className="w-3 h-3" />;
-      case "tsx":
-        return <SiReact className="w-3 h-3" />;
-      default:
-        return <Text className="w-3 h-3" />;
-    }
-  };
-
-  return getIcon();
-};
-
 // Map file extensions to Ace Editor modes
-const getAceMode = (language?: string): string => {
+const getAceMode = (language?: Language): string => {
   switch (language) {
-    case "typescript":
+    case "TypeScript":
       return "typescript";
-    case "javascript":
+    case "JavaScript":
       return "javascript";
-    case "tsx":
+    case "TypeScript React":
       return "tsx";
-    case "jsx":
+    case "JavaScript React":
       return "jsx";
-    case "css":
+    case "CSS":
       return "css";
-    case "scss":
-      return "css";
-    case "html":
+    case "HTML":
       return "html";
-    case "markdown":
+    case "Markdown":
       return "markdown";
-    case "python":
+    case "Python":
       return "python";
-    case "json":
+    case "JSON":
       return "json";
+    case "Text":
     default:
       return "text";
   }
@@ -266,7 +239,7 @@ const AceEditorComponent = ({
   onChange,
 }: {
   value: string;
-  language: string;
+  language: Language;
   onChange: (value: string) => void;
 }) => {
   return (

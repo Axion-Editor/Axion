@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getLanguageByExtension } from "@/lib/language";
 import { cn } from "@/lib/utils";
 import {
   ChevronDown,
@@ -11,9 +12,10 @@ import {
   FolderPlus,
   MoreHorizontal,
   Plus,
-  Search
+  Search,
 } from "lucide-react";
 import { useState } from "react";
+import LanguageIcon from "./LanguageIcon";
 
 interface FileNode {
   id: string;
@@ -44,26 +46,26 @@ const sampleFileStructure: FileNode[] = [
             name: "App.tsx",
             type: "file",
             path: "src/components/App.tsx",
-            language: "typescript",
-            size: 2048
+            language: getLanguageByExtension("tsx"),
+            size: 2048,
           },
           {
             id: "4",
             name: "Header.tsx",
             type: "file",
             path: "src/components/Header.tsx",
-            language: "typescript",
-            size: 1024
+            language: getLanguageByExtension("tsx"),
+            size: 1024,
           },
           {
             id: "5",
             name: "Sidebar.tsx",
             type: "file",
             path: "src/components/Sidebar.tsx",
-            language: "typescript",
-            size: 1536
-          }
-        ]
+            language: getLanguageByExtension("tsx"),
+            size: 1536,
+          },
+        ],
       },
       {
         id: "6",
@@ -77,7 +79,7 @@ const sampleFileStructure: FileNode[] = [
             type: "file",
             path: "src/hooks/useLocalStorage.ts",
             language: "typescript",
-            size: 512
+            size: 512,
           },
           {
             id: "8",
@@ -85,14 +87,35 @@ const sampleFileStructure: FileNode[] = [
             type: "file",
             path: "src/hooks/useDebounce.ts",
             language: "typescript",
-            size: 256
-          }
-        ]
+            size: 256,
+          },
+        ],
       },
-      { id: "9", name: "index.tsx", type: "file", path: "src/index.tsx", language: "typescript", size: 384 },
-      { id: "10", name: "App.css", type: "file", path: "src/App.css", language: "css", size: 1024 },
-      { id: "11", name: "utils.ts", type: "file", path: "src/utils.ts", language: "typescript", size: 768 }
-    ]
+      {
+        id: "9",
+        name: "index.tsx",
+        type: "file",
+        path: "src/index.tsx",
+        language: getLanguageByExtension("tsx"),
+        size: 384,
+      },
+      {
+        id: "10",
+        name: "App.css",
+        type: "file",
+        path: "src/App.css",
+        language: "css",
+        size: 1024,
+      },
+      {
+        id: "11",
+        name: "utils.ts",
+        type: "file",
+        path: "src/utils.ts",
+        language: "typescript",
+        size: 768,
+      },
+    ],
   },
   {
     id: "12",
@@ -100,18 +123,54 @@ const sampleFileStructure: FileNode[] = [
     type: "folder",
     path: "public",
     children: [
-      { id: "13", name: "index.html", type: "file", path: "public/index.html", language: "html", size: 1024 },
-      { id: "14", name: "favicon.ico", type: "file", path: "public/favicon.ico", size: 64 }
-    ]
+      {
+        id: "13",
+        name: "index.html",
+        type: "file",
+        path: "public/index.html",
+        language: "html",
+        size: 1024,
+      },
+      {
+        id: "14",
+        name: "favicon.ico",
+        type: "file",
+        path: "public/favicon.ico",
+        size: 64,
+      },
+    ],
   },
-  { id: "15", name: "package.json", type: "file", path: "package.json", language: "json", size: 2048 },
-  { id: "16", name: "tsconfig.json", type: "file", path: "tsconfig.json", language: "json", size: 512 },
-  { id: "17", name: "README.md", type: "file", path: "README.md", language: "markdown", size: 1024 },
-  { id: "18", name: ".gitignore", type: "file", path: ".gitignore", size: 256 }
+  {
+    id: "15",
+    name: "package.json",
+    type: "file",
+    path: "package.json",
+    language: "json",
+    size: 2048,
+  },
+  {
+    id: "16",
+    name: "tsconfig.json",
+    type: "file",
+    path: "tsconfig.json",
+    language: "json",
+    size: 512,
+  },
+  {
+    id: "17",
+    name: "README.md",
+    type: "file",
+    path: "README.md",
+    language: "markdown",
+    size: 1024,
+  },
+  { id: "18", name: ".gitignore", type: "file", path: ".gitignore", size: 256 },
 ];
 
 const FileExplorer = () => {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["1"]));
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set(["1"]),
+  );
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -128,33 +187,20 @@ const FileExplorer = () => {
   const getFileIcon = (file: FileNode) => {
     if (file.type === "folder") {
       return expandedFolders.has(file.id) ? (
-        <FolderOpen className="w-4 h-4 text-accent"/>
+        <FolderOpen className="w-4 h-4 text-accent" />
       ) : (
-        <Folder className="w-4 h-4 text-accent"/>
+        <Folder className="w-4 h-4 text-accent" />
       );
     }
 
     // File type icons based on extension
-    const ext = file.name.split('.').pop()?.toLowerCase();
-    switch (ext) {
-      case "tsx":
-      case "ts":
-        return <FileText className="w-4 h-4 text-status-info"/>;
-      case "css":
-      case "scss":
-        return <FileText className="w-4 h-4 text-accent"/>;
-      case "js":
-      case "jsx":
-        return <FileText className="w-4 h-4 text-status-warning"/>;
-      case "json":
-        return <FileText className="w-4 h-4 text-syntax-string"/>;
-      case "md":
-        return <FileText className="w-4 h-4 text-foreground"/>;
-      case "html":
-        return <FileText className="w-4 h-4 text-status-error"/>;
-      default:
-        return <File className="w-4 h-4 text-muted-foreground"/>;
-    }
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    return (
+      <LanguageIcon
+        language={getLanguageByExtension(ext)}
+        className="w-3 h-3"
+      />
+    );
   };
 
   const renderFileNode = (node: FileNode, depth = 0) => {
@@ -167,7 +213,7 @@ const FileExplorer = () => {
           className={cn(
             "flex items-center gap-1 py-1 px-2 cursor-pointer hover:bg-sidebar-accent transition-colors group",
             isSelected && "bg-sidebar-accent text-sidebar-accent-foreground",
-            "text-sm"
+            "text-sm",
           )}
           style={{ paddingLeft: `${depth * 12 + 8}px` }}
           onClick={() => {
@@ -181,13 +227,13 @@ const FileExplorer = () => {
           {node.type === "folder" && (
             <div className="w-4 h-4 flex items-center justify-center">
               {isExpanded ? (
-                <ChevronDown className="w-3 h-3 text-muted-foreground"/>
+                <ChevronDown className="w-3 h-3 text-muted-foreground" />
               ) : (
-                <ChevronRight className="w-3 h-3 text-muted-foreground"/>
+                <ChevronRight className="w-3 h-3 text-muted-foreground" />
               )}
             </div>
           )}
-          {node.type === "file" && <div className="w-4"/>}
+          {node.type === "file" && <div className="w-4" />}
 
           {getFileIcon(node)}
 
@@ -195,14 +241,14 @@ const FileExplorer = () => {
 
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
             <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <MoreHorizontal className="w-3 h-3"/>
+              <MoreHorizontal className="w-3 h-3" />
             </Button>
           </div>
         </div>
 
         {node.type === "folder" && isExpanded && node.children && (
           <div>
-            {node.children.map(child => renderFileNode(child, depth + 1))}
+            {node.children.map((child) => renderFileNode(child, depth + 1))}
           </div>
         )}
       </div>
@@ -230,20 +276,22 @@ const FileExplorer = () => {
       {/* Header */}
       <div className="p-3 border-b border-sidebar-border">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-sm uppercase tracking-wide">Explorer</h2>
+          <h2 className="font-semibold text-sm uppercase tracking-wide">
+            Explorer
+          </h2>
           <div className="flex gap-1">
             <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <Plus className="w-3 h-3"/>
+              <Plus className="w-3 h-3" />
             </Button>
             <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <FolderPlus className="w-3 h-3"/>
+              <FolderPlus className="w-3 h-3" />
             </Button>
           </div>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground"/>
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-muted-foreground" />
           <Input
             placeholder="Search files..."
             value={searchQuery}
@@ -256,7 +304,9 @@ const FileExplorer = () => {
       {/* File Tree */}
       <div className="flex-1 overflow-auto">
         <div className="py-1">
-          {filteredFiles(sampleFileStructure).map(node => renderFileNode(node))}
+          {filteredFiles(sampleFileStructure).map((node) =>
+            renderFileNode(node),
+          )}
         </div>
       </div>
 
