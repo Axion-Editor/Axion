@@ -109,7 +109,7 @@ This is a simple code editor built with React and Shiki for syntax highlighting.
                   e.stopPropagation();
                   closeTab(tab.id);
                 }}
-                className="p-0.5 rounded opacity-70 md:opacity-50 group-hover:opacity-100 hover:bg-muted-foreground/20 transition-opacity flex-shrink-0"
+                className="p-0.5 rounded opacity-70 md:opacity-0 group-hover:opacity-100 hover:bg-muted-foreground/20 transition-opacity flex-shrink-0"
               >
                 <X className="w-3 h-3" />
               </button>
