@@ -10,6 +10,8 @@ import { isNative } from "./lib/utils";
 import { EdgeToEdge } from '@capawesome/capacitor-android-edge-to-edge-support';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { useEffect } from "react";
+import { App as CapacitorApp } from '@capacitor/app';
+
 
 function hslToHex(hsl) {
   // Remove "hsl(" and ")" and split by space or comma
@@ -65,7 +67,7 @@ function hexToRGB(hex) {
 function getBestTextColor(hex) {
   const { r, g, b } = hexToRGB(hex);
   const luminance = getLuminance(r, g, b);
-  return luminance > 0.5 ? 'dark' : 'light';
+  return luminance > 0.5 ? 'light' : 'dark';
 }
 
 
@@ -79,13 +81,14 @@ const App = () => {
       const root = document.documentElement;
       const color = getComputedStyle(root).getPropertyValue('--color-background').trim();
       const hexColor = hslToHex(color)
+      console.log(hexColor)
       await EdgeToEdge.setBackgroundColor({ color: hexColor });
       const textColor = getBestTextColor(hexColor); 
+      console.log(textColor)
       await StatusBar.setStyle({
         style: textColor === 'dark' ? Style.Dark : Style.Light
       });
     };
-
     setBackgroundColor()
   }, []);
 

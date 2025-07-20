@@ -1,5 +1,6 @@
 package com.axion;
 
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -7,17 +8,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.PluginHandle;
 
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        registerPlugin(System.class);
 
-        //getWindow().setStatusBarColor(Color.TRANSPARENT);
-        //ViewCompat.setOnApplyWindowInsetsListener(getWindow().getDecorView(), (v, insets) -> {
-         //   var statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars());
-          //  v.setPadding(v.getPaddingLeft(), statusBarInsets.top, v.getPaddingRight(), v.getPaddingBottom());
-          //  return insets;
-        //});
+        //always register plugins before calling super
+        super.onCreate(savedInstanceState);
     }
+
 }
