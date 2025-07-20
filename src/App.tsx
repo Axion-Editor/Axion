@@ -14,8 +14,6 @@ const queryClient = new QueryClient();
 const App = () => {
   const Router = isNative() ? MemoryRouter : BrowserRouter;
 
-  console.log(isNative() ? "Native" : "Browser");
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
