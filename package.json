@@ -28,6 +28,8 @@
     "@capacitor/camera": "latest",
     "@capacitor/core": "latest",
     "@capacitor/splash-screen": "latest",
+    "@capacitor/status-bar": "^7.0.1",
+    "@capawesome/capacitor-android-edge-to-edge-support": "^7.2.2",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
