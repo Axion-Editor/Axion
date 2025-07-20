@@ -108,7 +108,7 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
     setTabs(newTabs);
 
     if (activeTab === tabId && newTabs.length > 0) {
-      setActiveTab(newTabs[0].id);
+      setActiveTab(newTabs[newTabs.length - 1].id);
     }
   };
 
