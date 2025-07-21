@@ -26,7 +26,6 @@
   "dependencies": {
     "@capacitor/android": "^7.4.2",
     "@capacitor/app": "^7.0.1",
-    "@capacitor/camera": "latest",
     "@capacitor/core": "latest",
     "@capacitor/splash-screen": "latest",
     "@capacitor/status-bar": "^7.0.1",

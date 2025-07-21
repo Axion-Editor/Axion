@@ -162,33 +162,17 @@ const TopBar = ({ onToggleSidebar, sidebarOpen }: TopBarProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
+
               <DropdownMenuItem onClick={() => navigate("/notifications")}>
                 <Bell className="w-4 h-4 mr-2" />
                 Notifications
                 <span className="ml-auto w-2 h-2 bg-status-error rounded-full"></span>
               </DropdownMenuItem>
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <Settings className="w-4 h-4 mr-2" />
-                  <span>Settings</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem>
-                    <span>Preferences</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Themes</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Extensions</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <span>Keyboard Shortcuts</span>
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
 
               <DropdownMenuItem>
                 <User className="w-4 h-4 mr-2" />

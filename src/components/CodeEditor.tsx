@@ -273,11 +273,11 @@ const CodeMirrorEditor = ({
     ...getLanguageExtension(language),
     EditorView.theme({
       "&": {
-        fontSize: "1px",
+        fontSize: "14px",
         fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
       },
       ".cm-content": {
-        padding: "12px",
+        padding: "0px",
         minHeight: "100%",
       },
       ".cm-focused": {
