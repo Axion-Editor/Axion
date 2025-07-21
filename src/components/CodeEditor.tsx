@@ -1,29 +1,17 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { X, Plus, Circle } from "lucide-react";
 
-import AceEditor from "react-ace";
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { css } from '@codemirror/lang-css';
+import { html } from '@codemirror/lang-html';
+import { markdown } from '@codemirror/lang-markdown';
+import { python } from '@codemirror/lang-python';
+import { json } from '@codemirror/lang-json';
+import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night';
+import { EditorView } from '@codemirror/view';
+import { EditorState } from "@codemirror/state"
 
-// Import modes (languages)
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/mode-typescript";
-import "ace-builds/src-noconflict/mode-jsx";
-import "ace-builds/src-noconflict/mode-tsx";
-import "ace-builds/src-noconflict/mode-css";
-import "ace-builds/src-noconflict/mode-html";
-import "ace-builds/src-noconflict/mode-markdown";
-import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/mode-text";
-
-// Import themes
-import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow_night";
-import "ace-builds/src-noconflict/theme-dracula";
-
-// Import extensions
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/ext-searchbox";
 
 import { cn, isNative } from "@/lib/utils";
 import LanguageIcon from "./LanguageIcon";
@@ -84,7 +72,7 @@ body {
       language: "Markdown",
       content: `# Axion
 
-This is a simple code editor built with React and Ace Editor for syntax highlighting.
+This is a simple code editor built with React and CodeMirror for syntax highlighting.
 
 ## Features
 
@@ -177,9 +165,9 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
       {/* Editor Content */}
       <div className="flex-1 overflow-hidden">
         {tabs.length > 0 && currentTab ? (
-          <AceEditorComponent
+          <CodeMirrorEditor
             value={currentTab.content}
-            language={currentTab.language || "Unknown"}
+            language={currentTab.language || "Text"}
             onChange={(content) => updateTabContent(currentTab.id, content)}
           />
         ) : (
@@ -197,34 +185,35 @@ This is a simple code editor built with React and Ace Editor for syntax highligh
   );
 };
 
-// Map file extensions to Ace Editor modes
-const getAceMode = (language?: Language): string => {
+// Get CodeMirror language extension based on Language type
+const getLanguageExtension = (language: Language) => {
   switch (language) {
     case "TypeScript":
-      return "typescript";
     case "JavaScript":
-      return "javascript";
+      return [javascript({ typescript: language === "TypeScript" })];
     case "TypeScript React":
-      return "tsx";
     case "JavaScript React":
-      return "jsx";
+      return [javascript({ 
+        typescript: language === "TypeScript React", 
+        jsx: true 
+      })];
     case "CSS":
-      return "css";
+      return [css()];
     case "HTML":
-      return "html";
+      return [html()];
     case "Markdown":
-      return "markdown";
+      return [markdown()];
     case "Python":
-      return "python";
+      return [python()];
     case "JSON":
-      return "json";
+      return [json()];
     case "Text":
     default:
-      return "text";
+      return [];
   }
 };
 
-const AceEditorComponent = ({
+const CodeMirrorEditor = ({
   value,
   language,
   onChange,
@@ -233,41 +222,108 @@ const AceEditorComponent = ({
   language: Language;
   onChange: (value: string) => void;
 }) => {
-  return (
-    <AceEditor
-      mode={getAceMode(language)}
-      theme="tomorrow_night"
-      value={value}
-      onChange={onChange}
-      name={`ace-editor-${language}`}
-      editorProps={{ $blockScrolling: true }}
-      fontSize={14}
-      showPrintMargin={false}
-      showGutter={true}
-      highlightActiveLine={true}
-      width="100%"
-      height="100%"
-      setOptions={{
-        enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true,
-        enableSnippets: true,
-        showLineNumbers: true,
-        tabSize: 2,
-        useWorker: false,
-        wrap: false,
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [editorHeight, setEditorHeight] = useState('400px');
+
+  const handleChange = useCallback((val: string) => {
+    onChange(val);
+  }, [onChange]);
+
+  // Dynamically calculate height based on container
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateHeight = () => {
+      const rect = container.getBoundingClientRect();
+      setEditorHeight(`${rect.height}px`);
+    };
+
+    // Initial height calculation
+    updateHeight();
+
+    // Create ResizeObserver to watch for size changes
+    const resizeObserver = new ResizeObserver(updateHeight);
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  const diagonalScrollExtension = EditorView.domEventHandlers({
+    wheel(event, view) {
+      const { deltaX, deltaY } = event
+      
+      if (deltaX !== 0 && deltaY !== 0) {
+        event.preventDefault()
+        
+        const scroller = view.scrollDOM
+        scroller.scrollLeft += deltaX
+        scroller.scrollTop += deltaY
+        
+        return true
+      }
+      
+      return false
+    }
+  })
+
+  const extensions = [
+    ...getLanguageExtension(language),
+    EditorView.theme({
+      "&": {
+        fontSize: "1px",
         fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
+      },
+      ".cm-content": {
+        padding: "12px",
+        minHeight: "100%",
+      },
+      ".cm-focused": {
+        outline: "none",
+      },
+      ".cm-editor": {
+        height: "100%",
+      },
+      ".cm-scroller": {
+        fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
+        overflow: "auto",
+      },
+    }),
+    diagonalScrollExtension
+  ];
+
+  return (
+    <div 
+      ref={containerRef}
+      style={{
+        height: '100%',
+        width: '100%',
+        position: 'relative',
       }}
-      commands={[
-        {
-          name: "save",
-          bindKey: { win: "Ctrl-S", mac: "Cmd-S" },
-          exec: () => {
-            // Handle save functionality
-            console.log("Save triggered");
-          },
-        },
-      ]}
-    />
+    >
+      <CodeMirror
+        value={value}
+        height={editorHeight}
+        width="100%"
+        theme={tokyoNight}
+        extensions={extensions}
+        onChange={handleChange}
+        basicSetup={{
+          lineNumbers: true,
+          foldGutter: true,
+          dropCursor: false,
+          allowMultipleSelections: false,
+          indentOnInput: true,
+          bracketMatching: true,
+          closeBrackets: true,
+          autocompletion: true,
+          highlightSelectionMatches: false,
+          searchKeymap: true,
+        }}
+      />
+    </div>
   );
 };
 
