@@ -256,44 +256,76 @@ const CodeMirrorEditor = ({
     };
   }, []);
 
-  // Handle viewport changes (keyboard show/hide)
+  // Handle viewport changes (keyboard show/hide) - FIXED VERSION
   useEffect(() => {
-    let initialViewportHeight = window.visualViewport?.height || window.innerHeight;
-    
-    const handleViewportChange = () => {
-      if (!window.visualViewport || !editorViewRef.current) return;
+    if (!window.visualViewport) return;
+
+    let isKeyboardVisible = false;
+    const initialHeight = window.visualViewport.height;
+
+    const ensureCursorVisible = () => {
+      const view = editorViewRef.current;
+      if (!view || !view.hasFocus) return;
+
+      const selection = view.state.selection.main;
+      const cursorPos = selection.head;
       
-      const currentHeight = window.visualViewport.height;
-      const heightDifference = initialViewportHeight - currentHeight;
+      // Get cursor coordinates relative to the editor
+      const cursorCoords = view.coordsAtPos(cursorPos);
+      if (!cursorCoords) return;
+
+      // Get editor's position in viewport
+      const editorRect = view.dom.getBoundingClientRect();
       
-      // If viewport height decreased significantly (keyboard likely showed)
-      if (heightDifference > 100) {
-        // Small delay to ensure keyboard is fully shown
-        setTimeout(() => {
-          const view = editorViewRef.current;
-          if (view) {
-            // Get current cursor position
-            const selection = view.state.selection.main;
-            const cursorPos = selection.head;
-            
-            // Scroll cursor into view with some padding from bottom
-            view.dispatch({
-              effects: EditorView.scrollIntoView(cursorPos, {
-                y: "start",
-                yMargin: 100 // Add some margin from the top
-              })
-            });
-          }
-        }, 150);
+      // Calculate cursor position relative to viewport
+      const cursorBottomInViewport = cursorCoords.bottom;
+      const lineHeight = cursorCoords.bottom - cursorCoords.top;
+      
+      // Get available viewport height (above keyboard)
+      const availableHeight = window.visualViewport.height;
+      
+      // Define safe zone - we want cursor to be at least this far from keyboard
+      const safeZone = Math.max(lineHeight * 3, 80); // 3 lines or 80px buffer
+      const targetMaxY = availableHeight - safeZone;
+      
+      // Check if cursor is hidden or too close to keyboard
+      if (cursorBottomInViewport > targetMaxY) {
+        // Calculate how much we need to scroll - be more aggressive
+        const scrollNeeded = cursorBottomInViewport - targetMaxY + lineHeight;
+        
+        // Get current scroll position
+        const currentScrollTop = view.scrollDOM.scrollTop;
+        
+        // Apply the scroll instantly
+        view.scrollDOM.scrollTop = currentScrollTop + scrollNeeded;
       }
     };
 
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleViewportChange);
-      return () => {
-        window.visualViewport?.removeEventListener('resize', handleViewportChange);
-      };
-    }
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport.height;
+      const heightDifference = initialHeight - currentHeight;
+      
+      // Keyboard is considered visible if viewport height decreased by more than 150px
+      const keyboardNowVisible = heightDifference > 150;
+      
+      // Only handle when keyboard becomes visible (not when it hides)
+      if (keyboardNowVisible && !isKeyboardVisible) {
+        isKeyboardVisible = true;
+        
+        // Wait for keyboard animation to complete
+        setTimeout(() => {
+          ensureCursorVisible();
+        }, 200);
+      } else if (!keyboardNowVisible && isKeyboardVisible) {
+        isKeyboardVisible = false;
+      }
+    };
+
+    window.visualViewport.addEventListener('resize', handleViewportChange);
+    
+    return () => {
+      window.visualViewport.removeEventListener('resize', handleViewportChange);
+    };
   }, []);
 
   const diagonalScrollExtension = EditorView.domEventHandlers({
@@ -314,34 +346,11 @@ const CodeMirrorEditor = ({
     },
   });
 
-  // Extension to handle focus and cursor visibility
+  // Simplified cursor visibility extension - FIXED VERSION
   const cursorVisibilityExtension = EditorView.updateListener.of((update) => {
-    if (update.selectionSet && update.view.hasFocus) {
+    if (update.selectionSet) {
       // Store reference to editor view
       editorViewRef.current = update.view;
-      
-      // Small delay to ensure cursor position is updated
-      setTimeout(() => {
-        const selection = update.view.state.selection.main;
-        const cursorPos = selection.head;
-        
-        // Check if cursor is near bottom of visible area
-        const cursorCoords = update.view.coordsAtPos(cursorPos);
-        if (cursorCoords) {
-          const editorRect = update.view.dom.getBoundingClientRect();
-          const viewportHeight = window.visualViewport?.height || window.innerHeight;
-          
-          // If cursor is in bottom 30% of viewport, scroll it into better view
-          if (cursorCoords.bottom > viewportHeight * 0.7) {
-            update.view.dispatch({
-              effects: EditorView.scrollIntoView(cursorPos, {
-                y: "start",
-                yMargin: 100
-              })
-            });
-          }
-        }
-      }, 50);
     }
   });
 
