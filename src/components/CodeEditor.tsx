@@ -1,17 +1,16 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { X, Plus, Circle } from "lucide-react";
 
-import CodeMirror from '@uiw/react-codemirror';
-import { javascript } from '@codemirror/lang-javascript';
-import { css } from '@codemirror/lang-css';
-import { html } from '@codemirror/lang-html';
-import { markdown } from '@codemirror/lang-markdown';
-import { python } from '@codemirror/lang-python';
-import { json } from '@codemirror/lang-json';
-import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night';
-import { EditorView } from '@codemirror/view';
-import { EditorState } from "@codemirror/state"
-
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { css } from "@codemirror/lang-css";
+import { html } from "@codemirror/lang-html";
+import { markdown } from "@codemirror/lang-markdown";
+import { python } from "@codemirror/lang-python";
+import { json } from "@codemirror/lang-json";
+import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night";
+import { EditorView } from "@codemirror/view";
+import { EditorState } from "@codemirror/state";
 
 import { cn, isNative } from "@/lib/utils";
 import LanguageIcon from "./LanguageIcon";
@@ -117,7 +116,7 @@ This is a simple code editor built with React and CodeMirror for syntax highligh
   const currentTab = tabs.find((tab) => tab.id === activeTab);
 
   return (
-    <div className="flex h-full flex-col bg-editor">
+    <div className="flex h-full flex-col-reverse bg-editor">
       {/* Tab Bar */}
       <div className="flex items-center bg-card border-b border-border">
         <div className="flex flex-1 overflow-x-auto">
@@ -193,10 +192,12 @@ const getLanguageExtension = (language: Language) => {
       return [javascript({ typescript: language === "TypeScript" })];
     case "TypeScript React":
     case "JavaScript React":
-      return [javascript({ 
-        typescript: language === "TypeScript React", 
-        jsx: true 
-      })];
+      return [
+        javascript({
+          typescript: language === "TypeScript React",
+          jsx: true,
+        }),
+      ];
     case "CSS":
       return [css()];
     case "HTML":
@@ -223,11 +224,14 @@ const CodeMirrorEditor = ({
   onChange: (value: string) => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [editorHeight, setEditorHeight] = useState('400px');
+  const [editorHeight, setEditorHeight] = useState("400px");
 
-  const handleChange = useCallback((val: string) => {
-    onChange(val);
-  }, [onChange]);
+  const handleChange = useCallback(
+    (val: string) => {
+      onChange(val);
+    },
+    [onChange],
+  );
 
   // Dynamically calculate height based on container
   useEffect(() => {
@@ -253,21 +257,21 @@ const CodeMirrorEditor = ({
 
   const diagonalScrollExtension = EditorView.domEventHandlers({
     wheel(event, view) {
-      const { deltaX, deltaY } = event
-      
+      const { deltaX, deltaY } = event;
+
       if (deltaX !== 0 && deltaY !== 0) {
-        event.preventDefault()
-        
-        const scroller = view.scrollDOM
-        scroller.scrollLeft += deltaX
-        scroller.scrollTop += deltaY
-        
-        return true
+        event.preventDefault();
+
+        const scroller = view.scrollDOM;
+        scroller.scrollLeft += deltaX;
+        scroller.scrollTop += deltaY;
+
+        return true;
       }
-      
-      return false
-    }
-  })
+
+      return false;
+    },
+  });
 
   const extensions = [
     ...getLanguageExtension(language),
@@ -291,16 +295,16 @@ const CodeMirrorEditor = ({
         overflow: "auto",
       },
     }),
-    diagonalScrollExtension
+    diagonalScrollExtension,
   ];
 
   return (
-    <div 
+    <div
       ref={containerRef}
       style={{
-        height: '100%',
-        width: '100%',
-        position: 'relative',
+        height: "100%",
+        width: "100%",
+        position: "relative",
       }}
     >
       <CodeMirror
