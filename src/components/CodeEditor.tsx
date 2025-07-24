@@ -224,6 +224,7 @@ const CodeMirrorEditor = ({
   onChange: (value: string) => void;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const editorViewRef = useRef<EditorView | null>(null);
   const [editorHeight, setEditorHeight] = useState("400px");
 
   const handleChange = useCallback(
@@ -255,6 +256,46 @@ const CodeMirrorEditor = ({
     };
   }, []);
 
+  // Handle viewport changes (keyboard show/hide)
+  useEffect(() => {
+    let initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    
+    const handleViewportChange = () => {
+      if (!window.visualViewport || !editorViewRef.current) return;
+      
+      const currentHeight = window.visualViewport.height;
+      const heightDifference = initialViewportHeight - currentHeight;
+      
+      // If viewport height decreased significantly (keyboard likely showed)
+      if (heightDifference > 100) {
+        // Small delay to ensure keyboard is fully shown
+        setTimeout(() => {
+          const view = editorViewRef.current;
+          if (view) {
+            // Get current cursor position
+            const selection = view.state.selection.main;
+            const cursorPos = selection.head;
+            
+            // Scroll cursor into view with some padding from bottom
+            view.dispatch({
+              effects: EditorView.scrollIntoView(cursorPos, {
+                y: "start",
+                yMargin: 100 // Add some margin from the top
+              })
+            });
+          }
+        }, 150);
+      }
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      return () => {
+        window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      };
+    }
+  }, []);
+
   const diagonalScrollExtension = EditorView.domEventHandlers({
     wheel(event, view) {
       const { deltaX, deltaY } = event;
@@ -271,6 +312,37 @@ const CodeMirrorEditor = ({
 
       return false;
     },
+  });
+
+  // Extension to handle focus and cursor visibility
+  const cursorVisibilityExtension = EditorView.updateListener.of((update) => {
+    if (update.selectionSet && update.view.hasFocus) {
+      // Store reference to editor view
+      editorViewRef.current = update.view;
+      
+      // Small delay to ensure cursor position is updated
+      setTimeout(() => {
+        const selection = update.view.state.selection.main;
+        const cursorPos = selection.head;
+        
+        // Check if cursor is near bottom of visible area
+        const cursorCoords = update.view.coordsAtPos(cursorPos);
+        if (cursorCoords) {
+          const editorRect = update.view.dom.getBoundingClientRect();
+          const viewportHeight = window.visualViewport?.height || window.innerHeight;
+          
+          // If cursor is in bottom 30% of viewport, scroll it into better view
+          if (cursorCoords.bottom > viewportHeight * 0.7) {
+            update.view.dispatch({
+              effects: EditorView.scrollIntoView(cursorPos, {
+                y: "start",
+                yMargin: 100
+              })
+            });
+          }
+        }
+      }, 50);
+    }
   });
 
   const extensions = [
@@ -296,6 +368,7 @@ const CodeMirrorEditor = ({
       },
     }),
     diagonalScrollExtension,
+    cursorVisibilityExtension,
   ];
 
   return (
